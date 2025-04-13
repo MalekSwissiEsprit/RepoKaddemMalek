@@ -1,33 +1,38 @@
 pipeline {
     agent any
-    tools {
-        jdk 'JAVA_HOME' // Assurez-vous que JAVA_HOME est configuré dans Jenkins
-        maven 'M2_HOME' // Assurez-vous que M2_HOME est configuré dans Jenkins
+    environment {
+        JAVA_HOME = tool name: 'JAVA_HOME', type: 'jdk'
+        M2_HOME = tool name: 'Maven 3', type: 'maven'
+        PATH = "${JAVA_HOME}/bin:${M2_HOME}/bin:${PATH}"
     }
     stages {
-        stage('Checkout Backend Code') {
+        stage('GIT') {
             steps {
-                dir('backend') {
-                    git branch: 'main',
-                        url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
-                }
+                git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
             }
         }
-        stage('Clean, Build and Test') {
+        stage('Compile Stage') {
             steps {
-                dir('backend') {
-                    echo '🔧 Cleaning and testing project with Maven'
-                    sh 'mvn clean test'
-                }
+                sh 'mvn clean compile'
+            }
+        }
+        stage('Test Stage') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+        stage('Maven Install') {
+            steps {
+                sh 'mvn install'
             }
         }
     }
     post {
         success {
-            echo 'Pipeline terminé avec succès !'
+            echo 'Build et tests réussis !'
         }
         failure {
-            echo 'Le pipeline a échoué. Vérifiez les logs.'
+            echo 'Échec du build ou des tests.'
         }
     }
 }
