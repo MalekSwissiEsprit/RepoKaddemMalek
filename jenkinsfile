@@ -4,7 +4,7 @@ pipeline {
                     JAVA_HOME = tool name: 'JAVA_HOME', type: 'jdk'
                     M2_HOME = tool name: 'Maven 3', type: 'maven'
                     PATH = "${JAVA_HOME}/bin:${M2_HOME}/bin:${PATH}"
-                    S
+                    
         }
     stages {
         stage('Checkout') {
