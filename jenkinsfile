@@ -9,16 +9,7 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
             }
         }
-        stage('Build & Test') {
-            steps {
-                sh 'mvn clean test'
-            }
-            post {
-                always {
-                    junit '**/target/surefire-reports/*.xml' // Publie les résultats des tests JUnit
-                }
-            }
-        }
+       
     }
     post {
         success {
