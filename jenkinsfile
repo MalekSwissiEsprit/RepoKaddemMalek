@@ -1,38 +1,53 @@
 pipeline {
     agent any
-    environment {
-        JAVA_HOME = tool name: 'JAVA_HOME', type: 'jdk'
-        M2_HOME = tool name: 'Maven 3', type: 'maven'
-        PATH = "${JAVA_HOME}/bin:${M2_HOME}/bin:${PATH}"
+
+    tools {
+        maven 'M2_HOME'  // Nom de l'installation Maven configurée dans Jenkins
+    
     }
+
     stages {
         stage('GIT') {
             steps {
+                echo 'Cloning repository...'
                 git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
             }
         }
+
         stage('Compile Stage') {
             steps {
+                echo 'Compiling the project...'
                 sh 'mvn clean compile'
             }
         }
+
         stage('Test Stage') {
             steps {
+                echo 'Running tests...'
                 sh 'mvn test'
             }
+            post {
+                always {
+                    echo 'Publishing JUnit test results...'
+                    junit '**/target/surefire-reports/*.xml' // Publie les résultats des tests JUnit
+                }
+            }
         }
+
         stage('Maven Install') {
             steps {
-                sh 'mvn install'
+                echo 'Installing the project to local Maven repository...'
+                sh 'mvn install -DskipTests' // Pas besoin de relancer les tests
             }
         }
     }
+
     post {
         success {
-            echo 'Build et tests réussis !'
+            echo 'Pipeline completed successfully!'
         }
         failure {
-            echo 'Échec du build ou des tests.'
+            echo 'Pipeline failed!'
         }
     }
 }
