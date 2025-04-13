@@ -7,13 +7,29 @@ pipeline {
                     
         }
     stages {
-        stage('git') {
+        stage('GIT') {
             steps {
                 git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
             }
         }
-       
-    }
+
+        stage('Compile Stage') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Test Stage') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Maven Install') {
+            steps {
+                sh 'mvn install'
+            }
+        }
     post {
         success {
             echo 'Build et tests réussis !'
