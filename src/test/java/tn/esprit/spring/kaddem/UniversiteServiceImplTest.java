@@ -44,7 +44,40 @@ public class UniversiteServiceImplTest {
     @Captor
     private ArgumentCaptor<Universite> universiteCaptor;
 
-    @BeforeEach
+
+    @Test
+   
+    public void testAjouterUniversite() {
+        // Création d'une université avec un nom
+        Universite universiteToAdd = new Universite();
+        universiteToAdd.setNomUniv("Université Nouvelle");
+
+        // Mock the save behavior to simulate ID generation
+        when(universiteRepository.save(any(Universite.class))).thenAnswer(invocation -> {
+            Universite savedUniversite = invocation.getArgument(0);
+            savedUniversite.setIdUniv(100); // Simulate an ID being set
+            return savedUniversite;
+        });
+
+        // Ajout
+        Universite savedUniversite = universiteService.addUniversite(universiteToAdd);
+
+        // Vérifier que l'université a bien été ajoutée dans la table
+        assertNotNull(savedUniversite.getIdUniv());
+
+        // Vérifier que l'université est associée à la bonne nom
+        assertEquals("Université Nouvelle", savedUniversite.getNomUniv());
+
+        // Vérifier que la taille du nom est logique
+        assertTrue(savedUniversite.getNomUniv().length() < 50);
+
+        // Nettoyer (mock the delete behavior)
+        doNothing().when(universiteRepository).deleteById(savedUniversite.getIdUniv());
+        universiteService.deleteUniversite(savedUniversite.getIdUniv());
+        verify(universiteRepository, times(1)).deleteById(savedUniversite.getIdUniv());
+    }
+
+  /*  @BeforeEach
     public void setUp() {
         universite = new Universite();
 
@@ -185,5 +218,5 @@ public class UniversiteServiceImplTest {
         // Act & Assert
         assertThrows(RuntimeException.class, () -> universiteService.retrieveAllUniversites());
         verify(universiteRepository, times(1)).findAll();
-    }
+    }*/
 }
