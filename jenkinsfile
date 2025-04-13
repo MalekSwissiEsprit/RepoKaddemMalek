@@ -1,8 +1,11 @@
 pipeline {
     agent any
-    tools {
-        maven 'M2_HOME' // Assurez-vous que Maven est configuré dans "Global Tool Configuration"
-    }
+      environment {
+                    JAVA_HOME = tool name: 'JAVA_HOME', type: 'jdk'
+                    M2_HOME = tool name: 'Maven 3', type: 'maven'
+                    PATH = "${JAVA_HOME}/bin:${M2_HOME}/bin:${PATH}"
+                    S
+        }
     stages {
         stage('Checkout') {
             steps {
