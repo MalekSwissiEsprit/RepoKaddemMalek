@@ -1,7 +1,11 @@
 pipeline {
     agent any
-    tools {
-        maven 'M2_HOME' // Doit correspondre au nom configuré dans "Global Tool Configuration"
+
+
+environment {
+       
+        M2_HOME = tool name: 'Maven 3', type: 'maven'
+   
     }
     stages {
         stage('Checkout') {
