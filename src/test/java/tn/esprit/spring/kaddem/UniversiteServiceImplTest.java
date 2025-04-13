@@ -3,6 +3,7 @@ package tn.esprit.spring.kaddem;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tn.esprit.spring.kaddem.entities.Departement;
@@ -17,11 +18,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
+// Use MockitoExtension instead of SpringExtension
 @ExtendWith(SpringExtension.class)
 //pour pouvoir ordonner le lancement des tests selon
 //order travailler
@@ -43,10 +43,24 @@ public class UniversiteServiceImplTest {
 
     @Captor
     private ArgumentCaptor<Universite> universiteCaptor;
-
-
+    // Test avancé : Récupérer toutes les universités avec une liste vide
     @Test
-   
+    public void testRetrieveAllUniversites_EmptyList() {
+        // Arrange
+        when(universiteRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // Act
+        List<Universite> result = universiteService.retrieveAllUniversites();
+
+        // Assert
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        verify(universiteRepository, times(1)).findAll();
+    }
+
+
+   /* @Test
+
     public void testAjouterUniversite() {
         // Création d'une université avec un nom
         Universite universiteToAdd = new Universite();
@@ -77,7 +91,7 @@ public class UniversiteServiceImplTest {
         verify(universiteRepository, times(1)).deleteById(savedUniversite.getIdUniv());
     }
 
-  /*  @BeforeEach
+    @BeforeEach
     public void setUp() {
         universite = new Universite();
 
