@@ -3,7 +3,7 @@ pipeline {
 
 
 tools {
-        maven 'Maven' // Maven configuré dans Jenkins
+        maven 'M2_HOME' // Maven configuré dans Jenkins
        
     }
     stages {
