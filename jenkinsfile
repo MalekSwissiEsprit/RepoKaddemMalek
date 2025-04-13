@@ -1,10 +1,7 @@
 pipeline {
     agent any
-
-
-tools {
-        maven 'M2_HOME' // Maven configuré dans Jenkins
-       
+    tools {
+        maven 'M2_HOME' // Doit correspondre au nom configuré dans "Global Tool Configuration"
     }
     stages {
         stage('Checkout') {
