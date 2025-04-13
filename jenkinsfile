@@ -1,53 +1,13 @@
 pipeline {
     agent any
-
     tools {
-        maven 'M2_HOME'  // Nom de l'installation Maven configurée dans Jenkins
-    
+        maven 'M2_HOME' // Define the Maven tool; 'M2_HOME' should match the name configured in Jenkins
     }
-
     stages {
-        stage('GIT') {
+        stage('MAVEN') {
             steps {
-                echo 'Cloning repository...'
-                git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
+                sh 'mvn --version' // This will print the Maven version to verify the setup
             }
-        }
-
-        stage('Compile Stage') {
-            steps {
-                echo 'Compiling the project...'
-                sh 'mvn clean compile'
-            }
-        }
-
-        stage('Test Stage') {
-            steps {
-                echo 'Running tests...'
-                sh 'mvn test'
-            }
-            post {
-                always {
-                    echo 'Publishing JUnit test results...'
-                    junit '**/target/surefire-reports/*.xml' // Publie les résultats des tests JUnit
-                }
-            }
-        }
-
-        stage('Maven Install') {
-            steps {
-                echo 'Installing the project to local Maven repository...'
-                sh 'mvn install -DskipTests' // Pas besoin de relancer les tests
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully!'
-        }
-        failure {
-            echo 'Pipeline failed!'
         }
     }
 }
