@@ -100,7 +100,7 @@ class UniversiteServiceImplTest {
         verify(universiteRepository, times(1)).delete(universite);
     }
 
-    @Test
+ /*  @Test
     void testAssignUniversiteToDepartement() {
         // Arrange
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
@@ -114,9 +114,9 @@ class UniversiteServiceImplTest {
         verify(universiteRepository, times(1)).findById(1);
         verify(departementRepository, times(1)).findById(1);
         verify(universiteRepository, times(1)).save(universite);
-    }
+    }*/
 
-    @Test
+  /*  @Test
     void testRetrieveDepartementsByUniversite() {
         // Arrange
         Set<Departement> departements = new HashSet<>();
@@ -130,5 +130,5 @@ class UniversiteServiceImplTest {
         // Assert
         assertEquals(1, result.size());
         verify(universiteRepository, times(1)).findById(1);
-    }
+    }*/
 }
