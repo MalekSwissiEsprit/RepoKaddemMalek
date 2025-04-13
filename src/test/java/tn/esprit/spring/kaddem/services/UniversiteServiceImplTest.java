@@ -1,6 +1,8 @@
 package tn.esprit.spring.kaddem.services;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +14,11 @@ import tn.esprit.spring.kaddem.entities.Universite;
 import tn.esprit.spring.kaddem.repositories.DepartementRepository;
 import tn.esprit.spring.kaddem.repositories.UniversiteRepository;
 
+import java.util.*;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
 @ExtendWith(SpringExtension.class)
 //pour pouvoir ordonner le lancement des tests selon
 //order travailler
@@ -20,140 +26,146 @@ import static org.junit.jupiter.api.Assertions.*;
 //une classe de test
 @SpringBootTest
 class UniversiteServiceImplTest {
-    @InjectMocks
-    private UniversiteServiceImpl universiteService;
-
     @Mock
     private UniversiteRepository universiteRepository;
 
     @Mock
     private DepartementRepository departementRepository;
 
+    @InjectMocks
+    private UniversiteServiceImpl universiteService;
+
     private Universite universite;
     private Departement departement;
 
- /*   @Captor
-    private ArgumentCaptor<Universite> universiteCaptor;
-    // Test avancé : Récupérer toutes les universités avec une liste vide
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         universite = new Universite();
         universite.setIdUniv(1);
-        universite.setNomUniv("Université Test");
+
+        universite.setNomUniv("Test University");
+        universite.setDepartements(new HashSet<>());
 
         departement = new Departement();
         departement.setIdDepart(1);
-        departement.setNomDepart("Département Test");
-
-        // Initialize the departements list to avoid NullPointerException
-        universite.setDepartements(new java.util.ArrayList<>());
+        departement.setNomDepart("Computer Science");
     }
 
     @Test
-    @Order(1)
-    public void testRetrieveAllUniversites_EmptyList() {
-        when(universiteRepository.findAll()).thenReturn(Collections.emptyList());
+    void testRetrieveAllUniversites() {
+        // Arrange
+        List<Universite> universites = Arrays.asList(universite);
+        when(universiteRepository.findAll()).thenReturn(universites);
+
+        // Act
         List<Universite> result = universiteService.retrieveAllUniversites();
+
+        // Assert
         assertNotNull(result);
-        assertTrue(result.isEmpty());
+        assertEquals(1, result.size());
+        assertEquals("Test University", result.get(0).getNomUniv());
         verify(universiteRepository, times(1)).findAll();
     }
 
     @Test
-    @Order(2)
-    public void testAjouterUniversite() {
-        Universite universiteToAdd = new Universite();
-        universiteToAdd.setNomUniv("Université Nouvelle");
-        when(universiteRepository.save(any(Universite.class))).thenAnswer(invocation -> {
-            Universite savedUniversite = invocation.getArgument(0);
-            savedUniversite.setIdUniv(100);
-            return savedUniversite;
-        });
-        Universite savedUniversite = universiteService.addUniversite(universiteToAdd);
-        assertNotNull(savedUniversite.getIdUniv());
-        assertEquals("Université Nouvelle", savedUniversite.getNomUniv());
-        assertTrue(savedUniversite.getNomUniv().length() < 50);
-        doNothing().when(universiteRepository).deleteById(savedUniversite.getIdUniv());
-        universiteService.deleteUniversite(savedUniversite.getIdUniv());
-        verify(universiteRepository, times(1)).deleteById(savedUniversite.getIdUniv());
-    }
-
-    @Test
-    @Order(3)
-    public void testAddUniversite_ThrowsExceptionOnNull() {
-        Universite universiteNull = null;
-        assertThrows(IllegalArgumentException.class, () -> universiteService.addUniversite(universiteNull));
-        verify(universiteRepository, never()).save(any(Universite.class));
-    }
-
-    @Test
-    @Order(4)
-    public void testUpdateUniversite_UsingArgumentCaptor() {
-        universite.setNomUniv("Université Modifiée");
+    void testAddUniversite() {
+        // Arrange
         when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
+
+        // Act
+        Universite result = universiteService.addUniversite(universite);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Test University", result.getNomUniv());
+        verify(universiteRepository, times(1)).save(universite);
+    }
+
+    @Test
+    void testUpdateUniversite() {
+        // Arrange
+        when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
+
+        // Act
         Universite result = universiteService.updateUniversite(universite);
-        assertEquals("Université Modifiée", result.getNomUniv());
-        verify(universiteRepository).save(universiteCaptor.capture());
-        Universite capturedUniversite = universiteCaptor.getValue();
-        assertEquals("Université Modifiée", capturedUniversite.getNomUniv());
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Test University", result.getNomUniv());
+        verify(universiteRepository, times(1)).save(universite);
     }
 
     @Test
-    @Order(5)
-    public void testRetrieveUniversite_NotFound() {
-        when(universiteRepository.findById(999)).thenReturn(Optional.empty());
-        assertThrows(NoSuchElementException.class, () -> universiteService.retrieveUniversite(999));
-        verify(universiteRepository, times(1)).findById(999);
+    void testRetrieveUniversite() {
+        // Arrange
+        when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
+
+        // Act
+        Universite result = universiteService.retrieveUniversite(1);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals("Test University", result.getNomUniv());
+        verify(universiteRepository, times(1)).findById(1);
     }
 
     @Test
-    @Order(6)
-    public void testDeleteUniversite_NotFound() {
-        doThrow(new IllegalArgumentException("Université non trouvée")).when(universiteRepository).deleteById(999);
-        assertThrows(IllegalArgumentException.class, () -> universiteService.deleteUniversite(999));
-        verify(universiteRepository, times(1)).deleteById(999);
+    void testDeleteUniversite() {
+        // Arrange
+        when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
+        doNothing().when(universiteRepository).delete(any(Universite.class));
+
+        // Act
+        universiteService.deleteUniversite(1);
+
+        // Assert
+        verify(universiteRepository, times(1)).findById(1);
+        verify(universiteRepository, times(1)).delete(universite);
     }
 
     @Test
-    @Order(7)
-    public void testAssignUniversiteToDepartement_ComplexScenario() {
+    void testAssignUniversiteToDepartement() {
+        // Arrange
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
         when(departementRepository.findById(1)).thenReturn(Optional.of(departement));
-        when(universiteRepository.save(any(Universite.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
+
+        // Act
         universiteService.assignUniversiteToDepartement(1, 1);
-        verify(universiteRepository).save(universiteCaptor.capture());
-        Universite capturedUniversite = universiteCaptor.getValue();
-        assertTrue(capturedUniversite.getDepartements().contains(departement));
+
+        // Assert
+        assertEquals(1, universite.getDepartements().size());
         verify(universiteRepository, times(1)).findById(1);
         verify(departementRepository, times(1)).findById(1);
+        verify(universiteRepository, times(1)).save(universite);
     }
 
     @Test
-    @Order(8)
-    public void testRetrieveDepartementsByUniversite_UniversiteNotFound() {
-        when(universiteRepository.findById(999)).thenReturn(Optional.empty());
-        assertThrows(NoSuchElementException.class, () -> universiteService.retrieveDepartementsByUniversite(999));
-        verify(universiteRepository, times(1)).findById(999);
-    }
-
-    @Test
-    @Order(9)
-    public void testAssignUniversiteToDepartement_VerifyOrder() {
+    void testRetrieveDepartementsByUniversite() {
+        // Arrange
+        universite.getDepartements().add(departement);
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
-        when(departementRepository.findById(1)).thenReturn(Optional.of(departement));
-        when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
-        universiteService.assignUniversiteToDepartement(1, 1);
-        InOrder inOrder = inOrder(universiteRepository, departementRepository);
-        inOrder.verify(universiteRepository).findById(1);
-        inOrder.verify(departementRepository).findById(1);
-        inOrder.verify(universiteRepository).save(any(Universite.class));
+
+        // Act
+        Set<Departement> result = universiteService.retrieveDepartementsByUniversite(1);
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("Computer Science", result.iterator().next().getNomDepart());
+        verify(universiteRepository, times(1)).findById(1);
     }
 
     @Test
-    @Order(10)
-    public void testRetrieveAllUniversites_RepositoryThrowsException() {
-        when(universiteRepository.findAll()).thenThrow(new RuntimeException("Erreur base de données"));
-        assertThrows(RuntimeException.class, () -> universiteService.retrieveAllUniversites());
-        verify(universiteRepository, times(1)).findAll();
-    }*/
+    void testRetrieveDepartementsByUniversite_WhenUniversiteNotFound() {
+        // Arrange
+        when(universiteRepository.findById(1)).thenReturn(Optional.empty());
+
+        // Act
+        Set<Departement> result = universiteService.retrieveDepartementsByUniversite(1);
+
+        // Assert
+        assertNull(result);
+        verify(universiteRepository, times(1)).findById(1);
+    }
 }
