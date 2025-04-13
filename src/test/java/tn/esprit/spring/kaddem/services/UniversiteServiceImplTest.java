@@ -1,34 +1,25 @@
-package tn.esprit.spring.kaddem;
+package tn.esprit.spring.kaddem.services;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
-
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tn.esprit.spring.kaddem.entities.Departement;
 import tn.esprit.spring.kaddem.entities.Universite;
 import tn.esprit.spring.kaddem.repositories.DepartementRepository;
 import tn.esprit.spring.kaddem.repositories.UniversiteRepository;
-import tn.esprit.spring.kaddem.services.UniversiteServiceImpl;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-// Use MockitoExtension instead of SpringExtension
 @ExtendWith(SpringExtension.class)
 //pour pouvoir ordonner le lancement des tests selon
 //order travailler
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 //une classe de test
 @SpringBootTest
-public class UniversiteServiceImplTest {
+class UniversiteServiceImplTest {
     @InjectMocks
     private UniversiteServiceImpl universiteService;
 
