@@ -1,12 +1,18 @@
 pipeline {
     agent any
     tools {
-        maven 'M2_HOME' // Define the Maven tool; 'M2_HOME' should match the name configured in Jenkins
+        maven 'M2_HOME' // Maven tool; ensure 'M2_HOME' matches the name in Jenkins
+        jdk 'JAVA_HOME' // JDK tool; ensure 'JAVA_HOME' matches the name in Jenkins
     }
     stages {
         stage('MAVEN') {
             steps {
-                sh 'mvn --version' // This will print the Maven version to verify the setup
+                sh 'mvn --version' // Prints Maven version to verify setup
+            }
+        }
+        stage('Java Version') {
+            steps {
+                sh 'java -version' // Prints Java version to verify JDK setup
             }
         }
     }
