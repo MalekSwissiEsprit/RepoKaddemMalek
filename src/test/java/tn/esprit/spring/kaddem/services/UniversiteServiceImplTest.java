@@ -8,6 +8,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -20,16 +21,10 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
-@ExtendWith(SpringExtension.class)
-//pour pouvoir ordonner le lancement des tests selon
-//order travailler
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-//une classe de test
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UniversiteServiceImplTest {
-   /* @Mock
+
+    @Mock
     private UniversiteRepository universiteRepository;
 
     @Mock
@@ -39,125 +34,101 @@ class UniversiteServiceImplTest {
     private UniversiteServiceImpl universiteService;
 
     private Universite universite;
-    private List<Universite> universiteList;
     private Departement departement;
 
     @BeforeEach
-    public void setUp() {
-        // Initialisation des objets utilisés pour les tests
-        universite = new Universite();
-        universite.setIdUniversite(1);
-        universite.setNomUniversite("Université Test");
-
-        universiteList = new ArrayList<>();
-        universiteList.add(universite);
-
-        Universite universite2 = new Universite();
-        universite2.setIdUniversite(2);
-        universite2.setNomUniversite("Université 2");
-        universiteList.add(universite2);
-
+    void setUp() {
+        universite = new Universite(1, "Test University");
         departement = new Departement();
-        departement.setIdDepartement(1);
-        departement.setNomDepartement("Département Test");
+        departement.setIdDepart(1);
     }
 
     @Test
-    public void testRetrieveAllUniversites() {
-        // Given
+    void testRetrieveAllUniversites() {
+        // Arrange
+        List<Universite> universiteList = Arrays.asList(universite);
         when(universiteRepository.findAll()).thenReturn(universiteList);
 
-        // When
+        // Act
         List<Universite> result = universiteService.retrieveAllUniversites();
 
-        // Then
-        assertEquals(2, result.size());
-        assertEquals("Université Test", result.get(0).getNomUniversite());
-        assertEquals("Université 2", result.get(1).getNomUniversite());
+        // Assert
+        assertEquals(1, result.size());
+        assertEquals("Test University", result.get(0).getNomUniv());
         verify(universiteRepository, times(1)).findAll();
     }
 
     @Test
-    public void testAddUniversite() {
-        // Given
+    void testAddUniversite() {
+        // Arrange
         when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
 
-        // When
+        // Act
         Universite result = universiteService.addUniversite(universite);
 
-        // Then
+        // Assert
         assertNotNull(result);
-        assertEquals("Université Test", result.getNomUniversite());
-        assertEquals(1, result.getIdUniversite());
+        assertEquals("Test University", result.getNomUniv());
         verify(universiteRepository, times(1)).save(universite);
     }
 
     @Test
-    public void testRetrieveUniversite() {
-        // Given
+    void testRetrieveUniversite() {
+        // Arrange
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
 
-        // When
+        // Act
         Universite result = universiteService.retrieveUniversite(1);
 
-        // Then
+        // Assert
         assertNotNull(result);
-        assertEquals(1, result.getIdUniversite());
-        assertEquals("Université Test", result.getNomUniversite());
+        assertEquals("Test University", result.getNomUniv());
         verify(universiteRepository, times(1)).findById(1);
     }
 
     @Test
-    public void testUpdateUniversite() {
-        // Given
-        Universite updatedUniversite = new Universite();
-        updatedUniversite.setIdUniversite(1);
-        updatedUniversite.setNomUniversite("Université Modifiée");
-
-        when(universiteRepository.save(any(Universite.class))).thenReturn(updatedUniversite);
-
-        // When
-        Universite result = universiteService.updateUniversite(updatedUniversite);
-
-        // Then
-        assertNotNull(result);
-        assertEquals("Université Modifiée", result.getNomUniversite());
-        assertEquals(1, result.getIdUniversite());
-        verify(universiteRepository, times(1)).save(updatedUniversite);
-    }
-
-    @Test
-    public void testDeleteUniversite() {
-        // Given
+    void testDeleteUniversite() {
+        // Arrange
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
         doNothing().when(universiteRepository).delete(universite);
 
-        // When
+        // Act
         universiteService.deleteUniversite(1);
 
-        // Then
+        // Assert
         verify(universiteRepository, times(1)).findById(1);
         verify(universiteRepository, times(1)).delete(universite);
     }
 
     @Test
-    public void testAssignUniversiteToDepartement() {
-        // Given
+    void testAssignUniversiteToDepartement() {
+        // Arrange
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
         when(departementRepository.findById(1)).thenReturn(Optional.of(departement));
         when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
 
-        // Simuler une liste de départements pour l'université
-        List<Departement> departements = new ArrayList<>();
-        universite.setDepartements(departements);
-
-        // When
+        // Act
         universiteService.assignUniversiteToDepartement(1, 1);
 
-        // Then
-        assertTrue(universite.getDepartements().contains(departement));
+        // Assert
         verify(universiteRepository, times(1)).findById(1);
         verify(departementRepository, times(1)).findById(1);
         verify(universiteRepository, times(1)).save(universite);
-    }*/
+    }
+
+    @Test
+    void testRetrieveDepartementsByUniversite() {
+        // Arrange
+        Set<Departement> departements = new HashSet<>();
+        departements.add(departement);
+        universite.setDepartements(departements);
+        when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
+
+        // Act
+        Set<Departement> result = universiteService.retrieveDepartementsByUniversite(1);
+
+        // Assert
+        assertEquals(1, result.size());
+        verify(universiteRepository, times(1)).findById(1);
+    }
 }
