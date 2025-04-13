@@ -1,8 +1,9 @@
 pipeline {
     agent any
-    tools {
-        maven 'M2_HOME' // Maven tool; ensure 'M2_HOME' matches the name in Jenkins
-        jdk 'JAVA_HOME' // JDK tool; ensure 'JAVA_HOME' matches the name in Jenkins
+   environment {
+        JAVA_HOME = tool name: 'JAVA_HOME', type: 'jdk'
+        M2_HOME = tool name: 'M2_HOME', type: 'maven'
+        PATH = "${JAVA_HOME}/bin:${M2_HOME}/bin:${PATH}"
     }
     stages {
         stage('Git Checkout') {
