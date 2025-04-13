@@ -100,7 +100,7 @@ class UniversiteServiceImplTest {
         verify(universiteRepository, times(1)).delete(universite);
     }
 
- /*  @Test
+  /*@Test
     void testAssignUniversiteToDepartement() {
         // Arrange
         when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
@@ -114,9 +114,25 @@ class UniversiteServiceImplTest {
         verify(universiteRepository, times(1)).findById(1);
         verify(departementRepository, times(1)).findById(1);
         verify(universiteRepository, times(1)).save(universite);
-    }*/
+    }
+*/
+  @Test
+  void testAssignUniversiteToDepartement() {
+      // Arrange
+      universite.setDepartements(new HashSet<>()); // Initialisation ici departement pour eviter null
+      when(universiteRepository.findById(1)).thenReturn(Optional.of(universite));
+      when(departementRepository.findById(1)).thenReturn(Optional.of(departement));
+      when(universiteRepository.save(any(Universite.class))).thenReturn(universite);
 
-  /*  @Test
+      // Act
+      universiteService.assignUniversiteToDepartement(1, 1);
+
+      // Assert
+      verify(universiteRepository, times(1)).findById(1);
+      verify(departementRepository, times(1)).findById(1);
+      verify(universiteRepository, times(1)).save(universite);
+  }
+   @Test
     void testRetrieveDepartementsByUniversite() {
         // Arrange
         Set<Departement> departements = new HashSet<>();
@@ -130,5 +146,5 @@ class UniversiteServiceImplTest {
         // Assert
         assertEquals(1, result.size());
         verify(universiteRepository, times(1)).findById(1);
-    }*/
+    }
 }
