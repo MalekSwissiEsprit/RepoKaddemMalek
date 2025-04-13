@@ -1,35 +1,31 @@
 pipeline {
     agent any
     tools {
-        maven 'M2_HOME' // Ensure Maven is configured in Jenkins Global Tool Configuration
+        maven 'M2_HOME' // Assurez-vous que Maven est configuré dans "Global Tool Configuration"
     }
     stages {
-        stage('Git Checkout') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', 
-                    url: 'https://github.com/MalekSwissiEsprit/ProjetDevopsKaddemIndiv.git'
+                git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
             }
         }
-        stage('Build') {
+        stage('Build & Test') {
             steps {
-                sh 'mvn clean package'
+                sh 'mvn clean test'
             }
-        }
-        stage('Test') {
-            steps {
-                sh 'mvn test'
+            post {
+                always {
+                    junit '**/target/surefire-reports/*.xml' // Publie les résultats des tests JUnit
+                }
             }
         }
     }
     post {
-        always {
-            cleanWs() // Clean workspace after build
-        }
         success {
-            echo 'Build completed successfully!'
+            echo 'Build et tests réussis !'
         }
         failure {
-            echo 'Build failed!'
+            echo 'Échec du build ou des tests.'
         }
     }
 }
