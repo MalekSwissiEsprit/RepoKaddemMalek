@@ -1,34 +1,33 @@
 pipeline {
     agent any
     tools {
-        maven 'M2_HOME' // Doit correspondre au nom configuré dans "Global Tool Configuration"
+        jdk 'JAVA_HOME' // Assurez-vous que JAVA_HOME est configuré dans Jenkins
+        maven 'M2_HOME' // Assurez-vous que M2_HOME est configuré dans Jenkins
     }
     stages {
-        stage('Checkout') {
+        stage('Checkout Backend Code') {
             steps {
-                echo 'Cloning repository...'
-                git branch: 'main', url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
+                dir('backend') {
+                    git branch: 'MAIN',
+                        url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
+                }
             }
         }
-        stage('Build & Test') {
+        stage('Clean, Build and Test') {
             steps {
-                echo 'Running Maven build and tests...'
-                sh 'mvn clean test'
-            }
-            post {
-                always {
-                    echo 'Publishing JUnit test results...'
-                    junit '**/target/surefire-reports/*.xml'
+                dir('backend') {
+                    echo '🔧 Cleaning and testing project with Maven'
+                    sh 'mvn clean test'
                 }
             }
         }
     }
     post {
         success {
-            echo 'Build et tests réussis !'
+            echo 'Pipeline terminé avec succès !'
         }
         failure {
-            echo 'Échec du build ou des tests.'
+            echo 'Le pipeline a échoué. Vérifiez les logs.'
         }
     }
 }
