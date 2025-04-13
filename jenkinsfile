@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout Backend Code') {
             steps {
                 dir('backend') {
-                    git branch: 'MAIN',
+                    git branch: 'main',
                         url: 'https://github.com/MalekSwissiEsprit/RepoKaddemMalek.git'
                 }
             }
