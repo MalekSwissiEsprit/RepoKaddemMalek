@@ -29,7 +29,7 @@ import static org.mockito.Mockito.times;
 //une classe de test
 @SpringBootTest
 public class UniversiteServiceImplTest {
-   /* @InjectMocks
+    @InjectMocks
     private UniversiteServiceImpl universiteService;
 
     @Mock
@@ -185,5 +185,5 @@ public class UniversiteServiceImplTest {
         // Act & Assert
         assertThrows(RuntimeException.class, () -> universiteService.retrieveAllUniversites());
         verify(universiteRepository, times(1)).findAll();
-    }*/
+    }
 }
